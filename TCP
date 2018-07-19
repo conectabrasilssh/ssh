@@ -1,0 +1,106 @@
+#!/bin/bash
+
+if [ $(id -u) -eq 0 ]; then
+clear
+ else
+ if echo $(id) |grep sudo > /dev/null
+then
+clear
+echo "Voce não é root"
+echo "Seu usuario esta no grupo sudo"
+echo -e "Para virar root execute \033[1;31msudo su\033[0m"
+exit
+else
+clear
+echo -e ""
+exit
+	fi
+fi
+
+fun1 () {
+	echo ""
+echo -e "\033[1;36mAs configurações de rede TCP já foram adicionadas no sistema!"
+	echo ""
+	read -p "Deseja remover as configurações de TCP? [s/n]: " -e -i n res
+echo -e "\033[0m"
+case $res in
+(S|s)
+resposta0="s"
+;;
+*)
+echo -e "\033[1;36mRetornando\033[0m"
+sleep 2s
+exit
+;;
+esac
+if [[ "$resposta0" = 's' ]]; then
+		grep -v "^#ADM
+net.ipv4.tcp_window_scaling = 1
+net.core.rmem_max = 16777216
+net.core.wmem_max = 16777216
+net.ipv4.tcp_rmem = 4096 87380 16777216
+net.ipv4.tcp_wmem = 4096 16384 16777216
+net.ipv4.tcp_low_latency = 1
+net.ipv4.tcp_slow_start_after_idle = 0" /etc/sysctl.conf > /tmp/syscl && mv /tmp/syscl /etc/sysctl.conf
+sysctl -p /etc/sysctl.conf > /dev/null
+		echo ""
+echo "As configurações de rede de TCP foram removidas com sucesso."
+		echo ""
+fi
+}
+fun2 () {
+	echo ""
+echo -e "\033[1;33mEste é um script experimental. Use por sua conta e risco!\033[0m"
+sleep 1s
+echo -e "\033[1;31mEste script irá alterar algumas configurações de rede 
+do sistema para reduzir a latência e melhorar a velocidade\033[0m"
+	echo ""
+read -p "Continuar com a instalação? [s/n]: " -e -i n resp
+case $resp in
+(s|S)
+resposta="s"
+;;
+*)
+echo -e "\033[1;33A instalação foi cancelada pelo usuário!"
+echo -e "\033[1;31mRetornando!\033[0m"
+sleep 1.5s
+exit
+;;
+esac
+if [[ "$resposta" = 's' ]]; then
+	echo ""
+echo -e "\033[1;31mModificando...\033[0m"
+	echo " " >> /etc/sysctl.conf
+	echo "#ADM" >> /etc/sysctl.conf
+echo "net.ipv4.tcp_window_scaling = 1
+net.core.rmem_max = 16777216
+net.core.wmem_max = 16777216
+net.ipv4.tcp_rmem = 4096 87380 16777216
+net.ipv4.tcp_wmem = 4096 16384 16777216
+net.ipv4.tcp_low_latency = 1
+net.ipv4.tcp_slow_start_after_idle = 0" >> /etc/sysctl.conf
+echo ""
+sysctl -p /etc/sysctl.conf
+		echo ""
+		echo "As configurações de rede TCP foram adicionadas com sucesso."
+fi
+}
+echo -e "\033[01;33m________________________________________\033[01;37m"
+echo -e "\033[1;33mEsse Script Foi Projetado Para Melhorar
+A Latencia e Velocidade Do Servidor!"
+echo -e "\033[01;33m________________________________________\033[01;37m"
+sleep 1.5s
+echo -e "
+\033[1;36mAnalizando...\033[0m"
+sleep 0.5s
+if [[ `grep -c "^#ADM" /etc/sysctl.conf` -eq 0 ]]
+then
+fun2
+read -p "Enter!" z
+exit
+ else
+fun1
+read -p "Enter!" z
+exit
+fi
+exit
