@@ -1,0 +1,180 @@
+#!/bin/bash
+corPadrao="\033[0m"
+preto="\033[0;30m"
+vermelho="\033[0;31m"
+verde="\033[0;32m"
+marrom="\033[0;33m"
+azul="\033[0;34m"
+purple="\033[0;35m"
+cyan="\033[0;36m"
+cinzaClaro="\033[0;37m"
+pretoCinza="\033[1;30m"
+vermelhoClaro="\033[1;31m"
+ve="\033[1;31m"
+verdeClaro="\033[1;32m"
+amarelo="\033[1;33m"
+azulClaro="\033[1;34m"
+purpleClaro="\033[1;35m"
+cyanClaro="\033[1;36m"
+branco="\033[1;37m"
+
+if [ "$1" = ""  ]
+then
+echo -e "                  \033[41;1;37m Testador de Hosts \033[0m "
+sleep 1
+echo -e " Forma de USO: "
+echo -e "sh $0 ARQUIVO COM A LISTA DE HOSTS PROXY    "
+echo -e " Exemplo:"
+echo -e "sh $0 hosts.txt    "
+exit 0
+fi
+
+if [ "$2" = ""  ]
+then
+echo -e "                  \033[41;1;37m Testador de Hosts \033[0m "
+sleep 1
+echo -e " Forma de USO: "
+echo -e "sh $0 ARQUIVO COM A LISTA DE HOSTS PROXY    "
+echo -e " Exemplo:"
+echo -e "sh $0 hosts.txt 127.0.0.1:8080   "
+exit 0
+fi
+
+
+echo -e "                  \033[1;1;31m TESTADOR DE HOSTS \033[0m "
+
+lista=$1
+
+sleep 1
+
+echo -e "\033[44;1;37mTestando...\033[0m "
+
+while read hosts
+do
+if [ "$3" = "--no-proxy" ]
+then
+curl=$(curl --max-time 3 -s -o /dev/null -w "%{http_code}" $hosts)
+curlGET=$(curl -X GET --max-time 4 -s -o /dev/null -w "%{http_code}" $hosts)
+curlPOST=$(curl -X POST --max-time 4 -s -o /dev/null -w "%{http_code}" $hosts)
+curlHEAD=$(curl -X HEAD --max-time 4 -s -o /dev/null -w "%{http_code}" $hosts)
+curlPUT=$(curl -X PUT --max-time 4 -s -o /dev/null -w "%{http_code}" $hosts)
+curlTRACE=$(curl -X TRACE --max-time 4 -s -o /dev/null -w "%{http_code}" $hosts)
+curlOPTIONS=$(curl -X OPTIONS --max-time 4 -s -o /dev/null -w "%{http_code}" $hosts)
+curlDELETE=$(curl -X DELETE --max-time 4 -s -o /dev/null -w "%{http_code}" $hosts)
+curlCONNECT=$(curl -X CONNECT --max-time 4 -s -o /dev/null -w "%{http_code}" $hosts)
+else
+curl=$(curl --proxy $2 --max-time 4 -s -o /dev/null -w "%{http_code}" $hosts)
+curlGET=$(curl --proxy $2 -X GET --max-time 4 -s -o /dev/null -w "%{http_code}" $hosts)
+curlPOST=$(curl --proxy $2 -X POST --max-time 4 -s -o /dev/null -w "%{http_code}" $hosts)
+curlHEAD=$(curl --proxy $2 -X HEAD --max-time 4 -s -o /dev/null -w "%{http_code}" $hosts)
+curlPUT=$(curl --proxy $2 -X PUT --max-time 4 -s -o /dev/null -w "%{http_code}" $hosts)
+curlTRACE=$(curl --proxy $2 -X TRACE --max-time 4 -s -o /dev/null -w "%{http_code}" $hosts)
+curlOPTIONS=$(curl --proxy $2 -X OPTIONS --max-time 4 -s -o /dev/null -w "%{http_code}" $hosts)
+curlDELETE=$(curl --proxy $2 -X DELETE --max-time 4 -s -o /dev/null -w "%{http_code}" $hosts)
+curlCONNECT=$(curl -X CONNECT --max-time 4 -s -o /dev/null -w "%{http_code}" $hosts)
+fi
+echo -e "$cyanClaro Host\033[0m $amarelo $hosts \033[0m Status: "
+
+echo -e "$verde$curlGET GET \033[0m"
+echo -e "$verde$curlPOST POST \033[0m"
+echo -e "$verde$curlHEAD HEAD \033[0m"
+echo -e "$verde$curlPUT PUT \033[0m"
+echo -e "$verde$curlTRACE TRACE \033[0m"
+echo -e "$verde$curlOPTIONS OPTIONS\033[0m"
+echo -e "$verde$curlDELETE DELETE \033[0m"
+echo -e "$verde$curlCONNECT CONNECT\033[0m"
+
+if [ "$curlGET" = "200" ]
+then
+echo -e " " >> /root/200.txt
+echo -e "$hosts" >> /root/200.txt
+okay="go"
+else
+ if [ "$curlPOST" = "200" ]
+then
+echo -e " " >> /root/200.txt
+echo -e "$hosts" >> /root/200.txt
+okay="go"
+else
+  if [ "$curlHEAD" = "200" ]
+then
+echo -e " " >> /root/200.txt
+echo -e "$hosts" >> /root/200.txt
+okay="go"
+else
+   if [ "$curlPUT" = "200" ]
+then
+echo -e " " >> /root/200.txt
+echo -e "$hosts" >> /root/200.txt
+okay="go"
+else
+    if [ "$curlTRACE" = "200" ]
+then
+echo -e " " >> /root/200.txt
+echo -e "$hosts" >> /root/200.txt
+okay="go"
+else
+     if [ "$curlOPTIONS" = "200" ]
+then
+echo -e " " >> /root/200.txt
+echo -e "$hosts" >> /root/200.txt
+okay="go"
+else
+      if [ "$curlDELETE" = "200" ]
+then
+echo -e " " >> /root/200.txt
+echo -e "$hosts" >> /root/200.txt
+okay="go"
+else
+       if [ "$curlCONNECT" = "200" ]
+then
+echo -e " " >> /root/200.txt
+echo -e "$hosts" >> /root/200.txt
+okay="go"
+       fi
+      fi
+     fi
+    fi
+   fi
+  fi
+ fi
+fi
+  if [ "$okay" = "go" ]
+then
+if [ "$curlGET" = "200" ]
+then
+echo -e "200 get" >> /root/200.txt
+fi
+if [ "$curlPOST" = "200" ]
+then
+echo -e "200 post" >> /root/200.txt
+fi
+if [ "$curlHEAD" = "200" ]
+then
+echo -e "200 head" >> /root/200.txt
+fi
+if [ "$curlPUT" = "200" ]
+then
+echo -e "200 put" >> /root/200.txt
+fi
+if [ "$curlTRACE" = "200" ]
+then
+echo -e "200 trace" >> /root/200.txt
+fi
+if [ "$curlOPTIONS" = "200" ]
+then
+echo -e "200 options" >> /root/200.txt
+fi
+if [ "$curlDELETE" = "200" ]
+then
+echo -e "200 delete" >> /root/200.txt
+fi
+if [ "$curlCONNECT" = "200" ]
+then
+echo -e "200 connect" >> /root/200.txt
+fi
+  fi
+done < $lista
+hostscat=$(cat $lista | wc -l)
+echo -e "$cyanClaro Foram Testados $hostscat Hosts. \033[0m"
+exit 0
